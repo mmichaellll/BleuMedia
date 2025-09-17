@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <title>{% block title %}BleuMedia{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400..900&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=account_circle,add_photo_alternate,close,cloud_upload,dark_mode,home,info,light_mode,login,logout,perm_media,search,settings,upload,video_file" />
+    {% block head %}{% endblock %}
+    <link rel='stylesheet' href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="nav-links">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='images/logo.svg') }}"alt="RedMedia logo of ..." id="logo-img">
+            </div>
+            <li><a href="{{ url_for('dashboard') }}">
+            <span class="material-symbols-outlined navbar-icon">home</span>
+            </a></li>
+            {% if 'user_id' in session %}
+            <li><a href="{{ url_for('upload') }}">
+                <span class="material-symbols-outlined navbar-icon">upload</span>
+            </a></li>
+            <li><a href="{{ url_for('library')}}">
+                <span class="material-symbols-outlined navbar-icon">perm_media</span>
+            </a></li>
+        </ul>
+        <nav class="rightnav">
+                <ul class="nav-links">
+                    <li onclick="account_settings()">
+                        <span class="material-symbols-outlined navbar-icon">account_circle</span>
+                    </li>
+                    <li onclick="toggle_mode()">
+                        <span class="material-symbols-outlined navbar-icon light-dark-mode">light_mode</span>
+                    </li>
+                </ul>
+    </nav>
+    <div id="account_options">
+        <div class="nav-links">
+            <li>
+                <a href="{{ url_for('profile') }}">
+                    Profile
+                </a>
+                
+            </li>
+            <br></br>
+            <li>
+                <a href="{{ url_for('logout') }}">
+                    Logout
+                </a>
+
+            </li>
+        </div>
+    </div>
+            {% else %}
+    </ul>
+    <nav class="rightnav">
+        <ul class="nav-links">
+            <li>
+                <a href="{{ url_for('login')}}">
+                    <span class="material-symbols-outlined navbar-icon">account_circle</span>
+                </a>
+            </li>
+                                <li onclick="toggle_mode()">
+                        <span class="material-symbols-outlined navbar-icon light-dark-mode">light_mode</span>
+                    </li>
+        </ul>
+    </nav>
+            {% endif %}
+    </nav>
+
+    <div class="content">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for message in messages %}
+                        <div class="flash">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        {% block content%}{% endblock%}
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    {% block jscripts %}
+    {% endblock %}
+</body>
+</html>

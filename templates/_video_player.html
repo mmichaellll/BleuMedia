@@ -1,0 +1,12 @@
+{% macro video_player(item=video, autoplay=False, fullscreen=True) %}
+<video
+    id="video_{{ item.filename|replace('.','_')}}"
+    class="video-js vjs-default-skin main-video-player"
+    controls
+    {% if autoplay %}autoplay{% endif %}
+    {% if fullscreen %}style="width:100vw; height:100vh;" {% else %}style="width:100%; height:300px;" {% endif %}
+    poster="/{{ item.thumbnail_path }}">
+    <source src="/{{ item.filepath }}" type="video/mp4">
+    Your browser does not support the video!
+</video>
+{% endmacro %}

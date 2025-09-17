@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% from "_video_player.html" import video_player %}
+{% block title %}Watch{% endblock %}
+{% block head %}
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet"/>
+{% endblock %}
+{% block content %}
+    <div class="watch-title">{{ item.title or item.filename }} </div>
+    {{ video_player(item, autoplay=True, fullscreen=True) }}
+{% endblock %}
+{% block jscripts %}
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+{% endblock %}

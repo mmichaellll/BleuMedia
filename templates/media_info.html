@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Media Info{% endblock %}
+{% block content %}
+<div class="profile-container">
+    <h1 class="title">Media Info</h1>
+    <div class="file-meta-row">
+        <div class="file-meta-col">
+            <span class="file-meta-text-label">Title:</span>
+            <div>{{ media.title }}</div>
+        </div>
+        <div class="file-meta-col">
+            <span class="file-meta-text-label">Last Watched:</span>
+            <div>{{ media.last_watched.strftime('%Y-%m-%d %H:%M:%S') if media.last_watched else 'Never' }}</div>
+        </div>
+        <div class="file-meta-col">
+            <span class="file-meta-text-label">File Path:</span>
+            <div>{{ media.filepath }}</div>
+        </div>
+        <div class="file-meta-col">
+            <span class="file-meta-text-label">Media Type:</span>
+            <div>{{ media.media_type }}</div>
+        </div>
+        <div class="file-meta-col">
+            <span class="file-meta-text-label">Upload Date</span>
+            <div>{{ media.uploaded_at.strftime('%Y-%m-%d %H:%M:%S') if media.uploaded_at else 'Unknown' }}</div>
+        </div>
+        <div class="file-meta-col">
+            <span class="file-meta-text-label">Tags:</span>
+            <div>
+                {% if tags %}
+                    {{ tags|join(', ')}}
+                {% else %}
+                    No tags
+                {% endif %}
+            </div>
+        </div>
+        {% if media.thumbnail_path %}
+        <div class="file-meta-col">
+            <span class="file-meta-text-label">Current Thumbnail</span>
+            <img src="{{ url_for('uploaded_file',filename=media.thumbnail_path|replace('uploads/', '')) }}" alt="Media Thumbnail" class="media-thumbnail">
+        </div>
+        {% endif %}
+        {% if tmdb_poster_url %}
+        <div class="file-meta-col">
+            <span class="file-meta-text-label">TMDB Poster:</span>
+            <img src="{{ tmdb_poster_url }}" alt="TMDB Poster" class="tmdb-poster">
+        </div>
+        {% endif %}
+    </div>
+    <div class='btn-group'>
+        <a href="{{ url_for('library') }}" class='btn'>Back to library</a>
+        {% if tmdb_result %}
+            <a href="https://www.themoviedb.org/movie/{{ tmdb_id }}" class='tmdb-btn'>
+                View on TMDB
+            </a>
+            {% if tmdb_poster_url %}
+            <form method="POST">
+                <input type="hidden" name="use_tmdb_poster" value="1">
+                <button type="submit" class="btn">
+                    Use TMDB Poster as Thumbnail
+                </button>
+            </form>
+            
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

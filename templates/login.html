@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}
+Login
+{% endblock %}
+{% block content %}
+<div align="center">
+  <div align="center" class="border">
+      <div class="header">
+        <h1 class="word">Login</h1>
+      </div>
+        <form action="{{ url_for('login') }}" method="post" class="login-form">
+        <div class="form-container-container">
+          <div class="form-container">
+            <label class="login-label">Username</label>
+
+            <input id="username" name="username" type="text" placeholder="Enter Your Username" class="textbox"/>
+          </div>
+          <div class="form-container">
+            <label class="login-label">Password</label>
+            <input id="password" name="password" type="password" placeholder="Enter Your Password" class="textbox"/>
+            </div>
+        </div>
+            <p class="bottom">Don't have an account?  <a class="bottom" href="{{url_for('register')}}"> Sign Up here</a></p>
+            <input type="submit" class="btn submit-btn" value="Sign In">
+        </form>
+
+  </div>
+</div>
+{% endblock %}

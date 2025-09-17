@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class='library-container'>
+    <div class="dashboard-welcome">
+        <h1 class="dashboard-title">Welcome</h1>
+        <p class="dashboard-username">{{ username }}!</p>
+    </div>
+    <h1 class="title">Recently Watched</h1>
+    <form method="POST" action="{{ url_for('dashboard')}}"> 
+        <div class="recent-videos">
+            {% if media and media|length > 0 %}
+                <div class="recent-video-list">
+                    {% for item in media[:5] %}
+                        <div class="recent-video-card">
+                            <h3 class="recent-video-title">{{ item.title }}</h3>
+                                {% if item.thumbnail_path %}
+                                    <img src="/{{ item.thumbnail_path }}" alt="Thumbnail" class="recent-video-thumb"/>
+                                {% endif %}
+                                <div class='card-actions'>
+                                        <a href="{{ url_for('watch', media_id=item.id) }}" class="play-btn-link">
+                                            <button type="button" class="play-btn">Play</button>
+                                        </a>
+                                        <a href="{{ url_for('media_info',media_id=item.id )}}" class="info-btn-link" title="Info">
+                                        <button type='button' class="remove-btn info-btn">
+                                            <span class="material-symbols-outlined">info</span>
+                                        </button>
+                                        </a>
+                                        <button type="submit" name='remove_file' value="{{ item.id }}" class='remove-btn'>
+                                            <span class='material-symbols-outlined'>close</span>
+                                        </button>
+                                </div>
+
+
+                            <div class="recent-video-meta">
+                                {{ item.last_watched.strftime("%Y-%m-%d %H:%M:%S") if item.last_watched else 'Never' }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    </div>
+            {% else %}
+                <p class="title">No uploaded videos! Go to <a href="{{ url_for('upload') }}">upload</a>!</p>
+            {% endif %}
+        </div>
+
+    </form>
+
+</div>
+{% endblock %}

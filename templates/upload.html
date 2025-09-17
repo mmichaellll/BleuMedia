@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+{% endblock %}
+{% block title %}Upload{% endblock %}
+{% block content %}
+<div class="upload-container">
+    <form id="upload-form" method="POST" action="{{ url_for('upload') }}" enctype="multipart/form-data">
+        <input type="file" id="file-upload" name='files' multiple accept=".mp4,.mov,.avi,.webm">
+        <label for='file-upload' class="upload-box">
+            <div class='box-content'>
+                <h2>Upload Media</h2> 
+                <span class="material-symbols-outlined">cloud_upload</span>
+            </div>
+        </label>
+        <div id="loading">
+            <p>Processing... please wait!</p>
+        </div>
+        {% if temp_uploads %}
+        <div class="temp-uploaded-list">
+            <h3>Selected Files</h3>
+            <ul class="file-list">
+                {% for file in temp_uploads %}
+                <li class='file-item'>
+                    <div class='file-info'>
+                        <div class='file-info-left'>
+                            <span class="material-symbols-outlined">video_file</span>
+                            <span class='file-name'>{{ file.name }}</span>
+                        </div>
+                        <div class='file-info-right'>
+                            <span class='file-size'>
+                                {% if file.size is not none %}
+                                    {{ (file.size / 1024 / 1024) | float | round(3)}} MB
+                                {% else %}
+                                    Size N/A
+                                {% endif %}    
+                        </span>
+                        </div>
+
+                    </div>
+                    <div class='file-meta-row'>
+                        <div class='file-meta-col'>
+                            <span class="file-meta-text-label">Title:</span>
+                            <label> 
+                                <input type='text' name="title_{{ file.name }}" value="{{ file.title if file.title else file.name }}">
+                            </label>
+                        </div>
+                        <div class='file-meta-col'>
+                            <span class="file-meta-text-label">Thumbnail:</span>
+                            <label for="thumbnail_{{ file.name }}" class="thumbnail-upload-label">
+                                <span class="material-symbols-outlined">add_photo_alternate</span>
+                            </label>
+                            <input type="file" id="thumbnail_{{ file.name }}" name="thumbnail_{{ file.name }}" accept="image/*" class="thumbnail-upload-input" onchange="showThumbLabel(this)">
+                            <span class='thumb-selected-label' style=" display:none;color:var(--primary);font-size:0.95em;margin-top:0.3em;"id="thumb-label-thumbnail_{{ file.name|replace(' ','_') }}">Thumbnail selected</span>
+                        </div>
+                        <div class='file-meta-col'>
+                        <span class="file-meta-text-label">Tags:</span>
+                            <input type="text" class="tag-input" name="tags_{{ file.name }}" id="tag_{{ file.name }}" value="{% if file.tags %}{{ file.tags | join(',')}}{% endif %}" placeholder="Add tags..." autocomplete="off">
+                        </div>
+                        <div class='file-meta-col remove-button-wrapper'>
+                            <button type="submit" name='remove_file' value="{{ file.name }}" class='remove-btn'>
+                                <span class='material-symbols-outlined'>close</span>
+                            </button>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            <button type='submit' name='confirm_upload' class='upload-button'>
+                <span class='material-symbols-outlined'>cloud_upload</span>
+                Upload Selected Files
+            </button>
+        </div>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}
+
+{% block jscripts %}
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',function() {
+    document.querySelectorAll('.tag-input').forEach(function(inputElement) {
+        const choices = new Choices(inputElement, {
+            delimiter: ',',
+            editItems: true,
+            maxItemCount: -1,
+            removeItemButton: true,
+            duplicateItemsAllowed: false,
+            placeholder: true,
+            placeholderValue: 'Add tags...',
+            paste: true,
+            addItems: true,
+            addItemFilter: () => true,
+            shouldSort: false,
+            searchEnabled: true,
+            searchPlaceholderValue: 'Type or add a label',
+            renderChoiceLimit: 5,
+            searchFields: ['label','value'],
+            noResultsText: 'No tags found',
+            noChoicesText: 'No tags available',
+            addItemText: (value) => `Press enter to add <b>"${value}"</b>`
+        });
+        // on form submit, convert selected tags from choicejs to comma seperated string, server should get "tag1,tag2,tag3"
+        inputElement.form && inputElement.form.addEventListener('submit',function() {
+            const values = choices.getValue(true); // get selected values as array
+            inputElement.value = Array.isArray(values) ? values.join(',') : values; // if its an array, join with commas, otherwise use  the value
+        });
+    });
+});
+
+function showThumbLabel (input) {
+    var labelId = 'thumb-label-' + input.id.replace(/\s/g,'_') // '\s' matches whitespace, 'g' is global meaning all whitespace, '_' is replacement string
+    var label = document.getElementById(labelId)
+    if (input.files && input.files.length > 0) {
+        label && (label.style.display ='inline');
+    } else {
+        label && (label.style.display ='none');
+    }
+}
+
+
+</script>
+{% endblock %}

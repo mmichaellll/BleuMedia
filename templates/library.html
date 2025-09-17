@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+{% endblock %}
+{% block title %}Library{% endblock %}
+{% block content %}
+<div class='library-container'>
+    <h1 class='title'>
+        My Library
+    </h1>
+
+    <form method="GET" action="{{ url_for('library') }}" class="sort-form">
+        <div class="search-bar-wrapper">
+            <span class="material-symbols-outlined search-icon">
+                search
+            </span>
+            <input type="search" name="query" placeholder="Search by title..." class="search-input" value="{{ query or '' }}">
+            </input>
+        </div>
+        <div class="tag-input-wrapper">
+            <select name="tags" id="tag-filter" class="tag-select" multiple>
+                {% for tag in all_tags %}
+                    <option value="{{tag}}" {% if tag in selected_tags %}selected{% endif %}>{{ tag }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="sort-dropdown-wrapper">
+            <select name="sort" class="tag-select" style="min-width:160px;">
+                <option value="uploaded_desc" {% if sort == 'uploaded_desc' %}selected{% endif %}>Upload (Newest)</option>
+                <option value="uploaded_asc" {% if sort == 'uploaded_asc' %}selected{% endif %}>Upload (Oldest)</option>
+                <option value="lastwatched_desc" {% if sort == 'lastwatched_desc' %}selected{% endif %}>Last Watched (Latest)</option>
+                <option value="lastwatched_asc" {% if sort == 'lastwatched_asc' %}selected{% endif %}>Last Watched (Oldest)</option>
+                <option value="title_asc" {% if sort == 'title_asc' %}selected{% endif %}>Title (A-Z)</option>
+                <option value="lastwatched_asc" {% if sort == 'lastwatched_asc' %}selected{% endif %}>Title (Z-A)</option>
+            </select>
+        </div>
+        <button type="submit" class="search-button">
+            Search
+        </button>
+    </form>
+    <div class="media-grid">
+        {% if media and media|length > 0 %}
+            <div class="recent-video-list">
+                {% for item in media %}
+                    <div class="recent-video-card">
+                        <h3 class="recent-video-title">{{ item.title }}</h3>
+                            {% if item.thumbnail_path %}
+                                <img src="/{{ item.thumbnail_path }}" alt="Thumbnail" class="recent-video-thumb"/>
+                            {% endif %}
+                            <div class='card-actions'>
+                                    <a href="{{ url_for('watch', media_id=item.id) }}" class="play-btn-link">
+                                        <button type="button" class="play-btn">Play</button>
+                                    </a>
+                                    <a href="{{ url_for('media_info',media_id=item.id )}}" class="info-btn-link" title="Info">
+                                        <button type='button' class="remove-btn info-btn">
+                                            <span class="material-symbols-outlined">info</span>
+                                        </button>
+                                    </a>
+                                    <form method="POST" action="{{ url_for('library') }}">
+                                        <button type="submit" name='remove_file' value="{{ item.id }}" class='remove-btn'>
+                                        <span class='material-symbols-outlined'>close</span>
+                                    </button>
+                                    </form>
+                            </div>
+
+
+                        <div class="recent-video-meta">
+                            {{ item.last_watched.strftime("%Y-%m-%d %H:%M:%S") if item.last_watched else 'Never' }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-results">
+                {% if query or selected_tags %}
+                    No media found matching your search!
+                {% else %}
+                    Your library is empty, <a href="{{ url_for('upload') }}">Upload something!</a>
+                {% endif %}
+            </p>
+        {% endif %}
+
+    </div>
+
+
+</div>
+{% endblock %}
+{% block jscripts %}
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tagFilterElement = document.getElementById('tag-filter');
+        if (tagFilterElement) {
+            new Choices(tagFilterElement, {
+                removeItemButton: true,
+                placeholder: true,
+                placeholderValue: 'Filter by tags...'
+            });
+        }
+    });
+</script>
+{% endblock %}
