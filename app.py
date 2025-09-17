@@ -14,8 +14,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-print(os.getenv("APIKEY"))
-
 app = Flask(__name__)
 app.secret_key = secrets.token_urlsafe(32)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
