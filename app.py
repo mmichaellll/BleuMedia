@@ -17,7 +17,7 @@ load_dotenv()
 print(os.getenv("APIKEY"))
 
 app = Flask(__name__)
-app.secret_key = 'fe65b4ae8c7a0db9e77a10d7c987ce4f2c9da26bf29e6782'
+app.secret_key = secrets.token_urlsafe(32)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["TEMP_UPLOAD_FOLDER"] = 'temp'
 app.config["UPLOAD_FOLDER"] = 'uploads'
